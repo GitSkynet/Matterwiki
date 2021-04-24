@@ -1,16 +1,32 @@
-module.exports = {
-  client: 'mysql',
-  connection: {
-    host : 'localhost',
-    user : 'root',
-    password : '',
-    database : 'matterwiki'
-  },
-  useNullAsDefault: true
+const env = process.env.NODE_ENV;
+const config = require("dotenv").config({
+  path: `config.${env}.env`
+});
+
+// Config probably not found!
+if (config.error) {
+  throw new Error(config.error);
 }
 
-/*
-The development object is the connection object for the development database.
-We need to create more for different environments (production, testing, staging).
-This environment is being used in the db.js file in the root directory. Check there.
-*/
+const connection = {
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER_NAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  charset: "utf8",
+  debug: !!process.env.DB_DEBUGINFO
+};
+
+module.exports = {
+  client: "mysql",
+  connection,
+  pool: {
+    max: 1
+  },
+  seeds: {
+    directory: "./db/seeds/"
+  },
+  migrations: {
+    directory: "./db/migrations/"
+  }
+};

@@ -1,63 +1,87 @@
+// TODO extract common chunks from dev and production configs, use webpack-merge compose the final webpack config
 
-/* 
- * TODO extract common chunks from dev and production configs 
- * and use something like webpack-merge to put them all together for the environment needed
- * Ref : http://survivejs.com/webpack/developing-with-webpack/splitting-configuration/
- */
+const webpack = require("webpack");
+const path = require("path");
 
-const webpack = require('webpack');
-const path = require('path');
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
-// TODO separate files for constants?
-const BUILD_DIR = path.resolve(__dirname, 'client/public');
-const APP_DIR = path.resolve(__dirname, 'client/app');
+const BUILD_DIR = path.resolve(__dirname, "dist/");
+const APP_DIR = path.resolve(__dirname, "src/client");
 
 module.exports = {
+  context: BUILD_DIR,
   entry: [
-    // react HMR specific stuff
-    'react-hot-loader/patch',
-    'webpack-hot-middleware/client?http://localhost:5000/',
-    'webpack/hot/dev-server',
-
-    // polyfill for fetch API (Safari)
-    // TODO a better way to handle this, maybe?
-    'whatwg-fetch', 
+    // make sure this is at the top
+    "webpack-hot-middleware/client?reload=true",
 
     // entry point
-    APP_DIR + '/index.jsx'
+    `${APP_DIR}/index.js`
   ],
   output: {
-    path: BUILD_DIR,    
-    publicPath : '/public/',
-    filename: 'bundle.js'
+    path: BUILD_DIR,
+    publicPath: "/",
+    filename: "bundle.js"
   },
-  // enabling sourcemaps for easier debugging
-  devtool : 'inline-source-map',
-  // again for react HMR
-  devServer : {
-    hot : true,
-    inline : true,
-    contentBase : BUILD_DIR,
-    publicPath : '/public/'
-  },
-  plugins : [
-      new webpack.HotModuleReplacementPlugin(),
-      new webpack.NamedModulesPlugin(),
-      new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('dev')
+  devtool: "inline-source-map",
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NamedModulesPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
+    new HtmlWebpackPlugin({
+      template: path.resolve(APP_DIR, "index.html")
+    }),
+    new webpack.DefinePlugin({
+      "process.env.NODE_ENV": JSON.stringify("dev")
     })
   ],
-  module : {
-    loaders : [
+  module: {
+    rules: [
       {
-        test : /\.jsx?/,
-        loader : 'babel-loader',
-        include : APP_DIR,
-        exclude : /node_modules/ ,
-        query: {
-          presets: ['es2015', 'react']
+        test: /\.js$/,
+        loader: "babel-loader",
+        include: APP_DIR,
+        exclude: /node_modules/,
+        options: {
+          presets: [["env", { modules: false }], "react"],
+          plugins: [
+            "transform-class-properties",
+            "transform-object-rest-spread"
+          ]
+        }
+      },
+      {
+        test: /\.css$/,
+        use: ["style-loader", "css-loader"]
+      },
+      {
+        test: /\.(jpg|png|svg)$/,
+        loader: "url-loader",
+        options: {
+          limit: 25000,
+          name: "./assets/[name].[ext]"
+        }
+      },
+      {
+        test: /\.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
+        loader: "file-loader",
+        options: {
+          name: "fonts/[name].[ext]"
         }
       }
     ]
+  },
+
+  resolve: {
+    modules: [
+      path.resolve("./"),
+      path.resolve("./src/client"),
+      path.resolve("./node_modules")
+    ]
+  },
+
+  node: {
+    fs: "empty",
+    net: "empty",
+    tls: "empty"
   }
 };

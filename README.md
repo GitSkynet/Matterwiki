@@ -51,6 +51,7 @@ You need to have `Node` (version 7 or above) and `npm` installed on your system.
 8. Create topics and add users to your Wiki.
 
 
+<<<<<<< HEAD
 **NOTE - Using MySQL**
 <hr/>
 By default Matterwiki uses **Sqlite**, which is a lightweight database management system perfect for an internal wiki.
@@ -91,6 +92,9 @@ module.exports = {
   useNullAsDefault: true
 }
 ```
+=======
+## TODO MySQL setup
+>>>>>>> redux
 
 ## Run with Docker:
 
