@@ -35,7 +35,7 @@ app.use(bodyParser.json());
 
 app.get('/api',function(req,res){
   // this is just a sample endpoint I build to see if things are working
-  res.send("Hey! You're looking at the matterwiki API");
+  res.send("Connection with Wiki SKYNET successfull");
 });
 
 // Importing all endpoints for authentication

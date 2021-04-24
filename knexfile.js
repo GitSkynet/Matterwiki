@@ -1,10 +1,13 @@
 module.exports = {
-    client: 'sqlite3',
-    connection: {
-      filename: process.env.TESTING ? "./tests/e2e/db/matterwiki.sqlite" : "./db/matterwiki.sqlite"
-    },
-    useNullAsDefault: true
-  }
+  client: 'mysql',
+  connection: {
+    host : 'localhost',
+    user : 'root',
+    password : '',
+    database : 'matterwiki'
+  },
+  useNullAsDefault: true
+}
 
 /*
 The development object is the connection object for the development database.
